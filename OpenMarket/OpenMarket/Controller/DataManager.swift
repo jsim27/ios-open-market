@@ -9,7 +9,7 @@ import UIKit
 
 class DataManager {
     
-    var itemsPerPage: Int = 15
+    var itemsPerPage: Int = 100
     var lastLoadedPage: Int = 1
     var hasNextPage: Bool = true
     weak var delegate: DataRepresentable?
@@ -26,12 +26,13 @@ class DataManager {
     }
 
     private func fetchPage(completion: @escaping () -> Void = {}) {
+        print(#function)
         URLSessionProvider(session: URLSession.shared)
             .request(.showProductPage(pageNumber: String(lastLoadedPage), itemsPerPage: String(itemsPerPage))) { (result: Result<ShowProductPageResponse, URLSessionProviderError>) in
                 switch result {
                 case .success(let data):
                     self.hasNextPage = data.hasNext
-                    self.itemsPerPage = 5
+                    self.itemsPerPage = 100
                     self.delegate?.snapshot.appendItems(data.pages)
                 case .failure(let error):
                     print(error)

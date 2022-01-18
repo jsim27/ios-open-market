@@ -21,7 +21,13 @@ final class ProductPageViewController: UIViewController, DataRepresentable {
     let gridCollectionView: UICollectionView
     let listDataSource: UICollectionViewDiffableDataSource<Int, Product>
     let gridDataSource: UICollectionViewDiffableDataSource<Int, Product>
-    
+
+    var isScrollable: Bool = true {
+        didSet {
+            print(isScrollable)
+        }
+    }
+
     required init?(coder: NSCoder) {
         self.listCollectionView = UICollectionView(frame: .zero,
                                                    collectionViewLayout: OpenMarketLayout.list.layout)
@@ -60,8 +66,16 @@ final class ProductPageViewController: UIViewController, DataRepresentable {
 extension ProductPageViewController: UICollectionViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y + scrollView.frame.height >= scrollView.contentSize.height {
-            datamanager.nextPage(completion: applyDataToCurrentView)
+        if  isScrollable,
+            scrollView.contentOffset.y + scrollView.frame.height >= scrollView.contentSize.height {
+            isScrollable = false
+            print(#function)
+            datamanager.nextPage {
+                self.isScrollable = true
+                self.applyDataToCurrentView()
+            }
+        } else {
+            print("BLOCKED!")
         }
     }
 
